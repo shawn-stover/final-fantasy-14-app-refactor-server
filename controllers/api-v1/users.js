@@ -2,7 +2,7 @@ const router = require('express').Router()
 const db = require('../../models')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const authLock = require('./authLock.js')
+const authLockedRoute = require('./authLockedRoute.js')
 
 //get /users == test api endpoint
 router.get('/', (req, res) => {
@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
             email: req.body.email
         })
         //if the user is found, don't let them register
-        if(findUser) return res.status(400).json({ msg: 'user already exists in the DB'})
+        if(findUser) return res.status(400).json({ msg: 'User already exists in the DB'})
         //hash password from req.body
         const password = req.body.password
         const salt = 12
@@ -42,7 +42,7 @@ router.post('/register', async (req, res) => {
         const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: 60 * 60})
         res.json({token})
     }catch(error) {
-        res.status(500).json({msg: 'internal server error'})
+        res.status(500).json({msg: 'Internal server error'})
     }
 })
 //post /user/login -- validate login creds
@@ -53,33 +53,35 @@ router.post('/login', async (req, res) => {
             email: req.body.email
         })
 
-        const validationFailedMessage = 'Incorrect username or password 😢'
-        //if the user is not found -- return immediately
+        const validationFailedMessage = 'Incorrect Information'
+        // if the user is not found -- return immediately
         if(!findUser) return res.status(400).json({msg: validationFailedMessage})
 
         // check the users password against what is in the req.body
         const matchPassword = await bcrypt.compare(req.body.password, findUser.password)
 
-        //if the password doesnt match -- return immediately
+        // if the password doesnt match -- return immediately
         if(!matchPassword) return res.status(400).json({msg: validationFailedMessage})
         
         // create the jwt payload
         const payload = {
             name: findUser.name,
             email: findUser.email,
-            id: findUser.id
+            id: findUser._id
         }
+
         //sign the jwt and send it back
-        const token = await jwt.sign(payload, process.env.JWT_SECRET,{ expiresIn: 60 * 60})
+        const token = jwt.sign(payload, process.env.JWT_SECRET,{ expiresIn: 60 * 60})
         res.json({ token })
     }catch (err) {
         res.status(500).json({msg: 'internal server error'})
     }
 })
+
 // get /auth-locked -- will redirect if a bad (or no) jwt is found
-router.get('/auth-lock', authLock, (req, res) => {
+router.get('/auth-locked', authLockedRoute, (req, res) => {
     // send private data back
-    res.json({msg: 'welcome to the auth-locked route you lucky dog! 🐩'})
+    res.json({ msg: 'Please select or add a character to begin!'})
 })
 
 module.exports = router

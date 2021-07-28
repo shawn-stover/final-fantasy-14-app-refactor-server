@@ -17,4 +17,4 @@ const authLockedRoute = async (req, res, next) => {
     }
 }
 
-module.exports = authLock
+module.exports = authLockedRoute

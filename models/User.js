@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({
     name: String,
-    password: String,
     email: String,
+    password: String,
     // Implement character owning later
-    characters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'char'}]
+    char_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Char'}]
 }, {
     timestamps: true
 })

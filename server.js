@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const rowdy = require('rowdy-logger')
+
 // connect to db
 const db = require('./models')
 db.connect()
@@ -16,6 +17,7 @@ app.use(cors())
 //body parser middleware
 app.use(express.urlencoded({extended: false}))
 app.use(express.json()) // for the request body
+
 //custom middleware
 app.use((req, res, next) => {
     console.log(`incoming request on ${req.method} ${req.url}`)
@@ -23,7 +25,12 @@ app.use((req, res, next) => {
     next()
 })
 
-const middleWare = (req,res, next) => {
+// Use Controllers
+app.use('/api-v1/users', require('./controllers/api-v1/users.js'))
+app.use('/api-v1/chars', require('./controllers/api-v1/chars.js'))
+app.use('/api-v1/authLockedRoute', require('./controllers/api-v1/authLockedRoute.js'))
+
+const middleWare = (req, res, next) => {
     console.log('I am a route specific middleware! 👾')
     next()
 }
