@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
 // get /auth-locked -- will redirect if a bad (or no) jwt is found
 router.get('/auth-locked', authLockedRoute, (req, res) => {
     // send private data back
-    res.json({ msg: 'Please select or add a character to begin!'})
+    res.json({ msg: 'Please select or search a character to begin!'})
 })
 
 module.exports = router
